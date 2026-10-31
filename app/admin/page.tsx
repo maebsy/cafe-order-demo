@@ -6,7 +6,7 @@ import { createClient } from "@supabase/supabase-js";
 // 관리자 화면: 오늘 들어온 주문을 보고 취소할 수 있게 함
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, // 공개용 anon 키. 권한은 RLS 정책으로 제한
 );
 
 type Order = { id: number; customer: string; item: string; total: number };

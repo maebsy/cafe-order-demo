@@ -39,7 +39,7 @@ function createApp() {
   app.get("/api/orders", (req, res) => {
     const orderId = req.query.orderId;
     try {
-      const rows = db.query("SELECT * FROM orders WHERE id = " + orderId);
+      const rows = db.query("SELECT * FROM orders WHERE id = ?", orderId);
       res.json(rows);
     } catch (e) {
       res.status(400).json({ error: "잘못된 주문 번호" });
