@@ -1,0 +1,39 @@
+{
+  "comment": "정답지. labels 는 72hours scripts/service-validation/engine_quality.py 의 evaluate_labels 형식(rule·file·line·expected)입니다. expected=false 는 걸리면 안 되는 오탐 함정입니다. measured 는 v1-vulnerable 을 72hours 보안엔진(Opengrep·Gitleaks·OSV·config)으로 검사한 실측값입니다.",
+  "target": "v1-vulnerable",
+  "labels": [
+    {"rule": "vibe-coding/supabase-service-role-in-client", "file": "app/admin/page.tsx", "line": 8, "expected": true, "note": "브라우저 코드에서 service_role 키로 Supabase 클라이언트 생성"},
+    {"rule": "vibe-coding/public-env-exposes-secret", "file": "app/admin/page.tsx", "line": 9, "expected": true, "note": "NEXT_PUBLIC_ 접두어 비밀값"},
+    {"rule": "vibe-coding/sql-string-concat", "file": "app/api/orders/route.ts", "line": 7, "expected": true, "note": "SQL 템플릿 문자열"},
+    {"rule": "vibe-coding/nextjs-api-mutation-without-auth", "file": "app/api/orders/route.ts", "line": 14, "expected": true, "note": "로그인 확인 없는 POST 쓰기"},
+    {"rule": "vibe-coding/token-in-localstorage", "file": "app/login/page.tsx", "line": 11, "expected": true, "note": "토큰을 localStorage 에 저장"},
+    {"rule": "vibe-coding/react-dangerously-set-inner-html", "file": "app/reviews/ReviewCard.tsx", "line": 8, "expected": true, "note": "후기 HTML 그대로 출력 (XSS)"},
+    {"rule": "vibe-coding/cors-allow-any-origin", "file": "server/server.js", "line": 32, "expected": true, "note": "CORS * + credentials"},
+    {"rule": "vibe-coding/sql-string-concat", "file": "server/server.js", "line": 42, "expected": true, "note": "주문 조회 SQL 주입 (실검증 sqli-orders)"},
+    {"rule": "vibe-coding/sql-string-concat", "file": "server/server.js", "line": 57, "expected": true, "note": "// nosemgrep 으로 경고만 숨긴 SQL 주입. 실측: 미탐(알려진 한계)"},
+    {"rule": "vibe-coding/node-command-injection", "file": "server/server.js", "line": 68, "expected": true, "note": "exec(\"ping -c 1 \" + host)"},
+    {"rule": "vibe-coding/jwt-hardcoded-secret", "file": "server/server.js", "line": 75, "expected": true, "note": "JWT 서명 키 하드코딩"},
+    {"rule": "stripe-access-token", "file": ".env", "line": 4, "expected": true, "note": "가짜 Stripe 키 (sk_test_)"},
+    {"rule": "jwt", "file": ".env", "line": 3, "expected": true, "note": "가짜 Supabase service_role JWT. 실측: 탐지됐지만 likely_public_key(low)로 분류됨 — service_role 은 공개 키가 아님(확인 필요)"},
+    {"rule": "generic-api-key", "file": "_layouts/base.html", "line": 18, "expected": true, "note": "Algolia 검색 전용 공개 키 (오탐 함정). 탐지는 맞고, LLM 단계에서 '키 권한 확인 필요(사람 확인)'로 처리돼야 함", "expect_llm": "needs_manual_review"},
+    {"rule": "config/supabase-rls-not-enabled", "file": "supabase/migrations/001_init.sql", "line": 2, "expected": true, "note": "orders 테이블 RLS 없음"},
+    {"rule": "config/supabase-rls-not-enabled", "file": "supabase/migrations/001_init.sql", "line": 10, "expected": true, "note": "customers 테이블 RLS 없음"},
+    {"rule": "vibe-coding/sql-string-concat", "file": "server/server.js", "line": 51, "expected": false, "note": "오탐 함정: 이미 매개변수 바인딩 (/api/orders/safe)"},
+    {"rule": "stripe-access-token", "file": "tests/fixtures/sample.env", "line": 2, "expected": false, "note": "오탐 함정: 테스트 예시 값"}
+  ],
+  "file_labels": [
+    {"rule": "config/env-file-committed", "file": ".env", "expected": true},
+    {"rule": "config/gitignore-missing-env", "file": ".gitignore", "expected": true},
+    {"rule": "config/missing-security-headers", "file": "package.json", "expected": true, "note": "의도하지 않았지만 맞는 지적 (보안 헤더 설정 없음)"},
+    {"package": "lodash", "file": "package-lock.json", "expected": true, "note": "lodash 4.17.11: CVE-2019-10744(프로토타입 오염, critical) 등 7건"}
+  ],
+  "measured": {
+    "engine": "72hours main 1c140dc (2026-11-01), Opengrep 1.33.1·Gitleaks 8.30.1·OSV-Scanner 2.7.0",
+    "coverage": {"osv": 7, "semgrep": 10, "gitleaks": 3, "config": 5, "total": 25},
+    "line_labels": {"TP": 15, "FN": 1, "FP": 0, "TN": 2},
+    "known_gaps": [
+      "server/server.js:57 — // nosemgrep 주석으로 숨긴 SQL 주입을 탐지하지 못함",
+      ".env:3 — Supabase service_role JWT 가 likely_public_key(low)로 낮게 분류됨"
+    ]
+  }
+}

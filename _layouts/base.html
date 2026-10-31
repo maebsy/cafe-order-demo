@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>{{ page.title }} · 72카페</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3.8.2">
+</head>
+<body>
+  <header><a href="/">72카페</a> <div id="docsearch"></div></header>
+  {{ content }}
+  <script src="https://cdn.jsdelivr.net/npm/@docsearch/js@3.8.2"></script>
+  <script>
+    // 메뉴 검색 위젯 (Algolia DocSearch, 검색 전용 공개 키)
+    docsearch({
+      container: "#docsearch",
+      appId: "CAFE72DEMO",
+      indexName: "cafe_menu",
+      apiKey: "495f87c9f3491484320b1862409b1105",
+    });
+  </script>
+</body>
+</html>

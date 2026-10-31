@@ -1,0 +1,19 @@
+{
+  "name": "cafe-order-demo-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "의도적으로 취약한 데모 주문 서버 (배포 금지)",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "cors": "2.8.6",
+    "express": "5.3.0",
+    "jsonwebtoken": "9.0.3"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "license": "MIT"
+}
